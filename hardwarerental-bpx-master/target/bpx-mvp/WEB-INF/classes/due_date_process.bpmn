@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_19b0q7o" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:process id="Process_19mnhoo" isExecutable="true">
+    <bpmn:sequenceFlow id="Flow_1i8quj6" sourceRef="Event_1ww5w37" targetRef="hardwarerental.Check_Date" />
+    <bpmn:endEvent id="Event_19vu2bu">
+      <bpmn:incoming>Flow_0z1ojxq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0z1ojxq" sourceRef="hardwarerental.Check_Date" targetRef="Event_19vu2bu" />
+    <bpmn:intermediateCatchEvent id="Event_1ww5w37" name="Every 24 hours">
+      <bpmn:incoming>SequenceFlow_137q6a5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1i8quj6</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_092e7oe">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/PT24H</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="hardwarerental.Check_Date" name="Remind student" camunda:class="hardwarerental.RemindStudent">
+      <bpmn:incoming>Flow_1i8quj6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0z1ojxq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="hardwarerental.Start_DueDate">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="stdnt_firstname" label="First name" type="string" />
+          <camunda:formField id="stdnt_id" label="UserID" type="string" />
+          <camunda:formField id="stdnt_reason" label="Reason" type="string" />
+          <camunda:formField id="stdnt_mail" label="Email" type="string" />
+          <camunda:formField id="stdnt_comment" label="Comment" type="string" />
+          <camunda:formField id="stdnt_lastname" label="Lastname" type="string" />
+          <camunda:formField id="stdnt_address" label="Address" type="string" />
+          <camunda:formField id="stdnt_city" label="City" type="string" />
+          <camunda:formField id="stdnt_phone" label="Phone" type="string" />
+          <camunda:formField id="stdnt_username" label="Username" type="string" />
+          <camunda:formField id="stdnt_course" label="Course" type="string" />
+          <camunda:formField id="resource_id" label="ResourceID" type="string" />
+          <camunda:formField id="applic_from" label="Application From" type="date" />
+          <camunda:formField id="applic_to" label="Application to" type="date" />
+          <camunda:formField id="req_date" label="Request Date" type="date" />
+          <camunda:formField id="resource_name" label="Resource name" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_137q6a5</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_137q6a5" sourceRef="hardwarerental.Start_DueDate" targetRef="Event_1ww5w37" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_19mnhoo">
+      <bpmndi:BPMNEdge id="Flow_1i8quj6_di" bpmnElement="Flow_1i8quj6">
+        <di:waypoint x="298" y="117" />
+        <di:waypoint x="350" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0z1ojxq_di" bpmnElement="Flow_0z1ojxq">
+        <di:waypoint x="450" y="117" />
+        <di:waypoint x="522" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1b24ubz_di" bpmnElement="Event_1ww5w37">
+        <dc:Bounds x="262" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="243" y="142" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0b1io6a_di" bpmnElement="hardwarerental.Check_Date">
+        <dc:Bounds x="350" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19vu2bu_di" bpmnElement="Event_19vu2bu">
+        <dc:Bounds x="522" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1xlsoyz_di" bpmnElement="hardwarerental.Start_DueDate">
+        <dc:Bounds x="182" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_137q6a5_di" bpmnElement="SequenceFlow_137q6a5">
+        <di:waypoint x="218" y="117" />
+        <di:waypoint x="262" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

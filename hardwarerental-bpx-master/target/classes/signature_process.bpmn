@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_12q03ll" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <bpmn:collaboration id="Signature_process">
+    <bpmn:participant id="dsjfadskjgdsfgkjdsflkjgldsjgdsg" processRef="hardwarerental-signature" />
+  </bpmn:collaboration>
+  <bpmn:process id="hardwarerental-signature" name="Hardwarerental Signature" isExecutable="true">
+    <bpmn:endEvent id="hardwarerental.DHBW_Declined" name="request is declined">
+      <bpmn:incoming>SequenceFlow_1xprjdt</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="hardwarerental-prepare_document" name="Document&#10;Preparation">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="docusign_link" label="DocuSign Link" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1huy1zr</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0l9r04x</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:extensionElements>
+        <camunda:formData businessKey="stdnt_name">
+          <camunda:formField id="stdnt_name" label="Name" type="string" />
+          <camunda:formField id="stdnt_mail" label="Email" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1huy1zr</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sendTask id="hardwarerental.Signature_Mail" name="Send Borrowers Note to Student" camunda:class="moodle.RentalSignatureMail">
+      <bpmn:incoming>SequenceFlow_1ccatoe</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xprjdt</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:userTask id="hardwarerental.signature" name="Signature process">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="document" label="Document" type="string" />
+          <camunda:formField id="coc" label="Certificate of Completition" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0l9r04x</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ccatoe</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1ccatoe" sourceRef="hardwarerental.signature" targetRef="hardwarerental.Signature_Mail" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xprjdt" sourceRef="hardwarerental.Signature_Mail" targetRef="hardwarerental.DHBW_Declined" />
+    <bpmn:sequenceFlow id="SequenceFlow_0l9r04x" sourceRef="hardwarerental-prepare_document" targetRef="hardwarerental.signature" />
+    <bpmn:sequenceFlow id="SequenceFlow_1huy1zr" sourceRef="StartEvent_1" targetRef="hardwarerental-prepare_document" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Signature_process">
+      <bpmndi:BPMNShape id="Participant_0mcf56u_di" bpmnElement="dsjfadskjgdsfgkjdsflkjgldsjgdsg" isHorizontal="true">
+        <dc:Bounds x="156" y="81" width="780" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="191" y="150" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1dc1v0d_di" bpmnElement="hardwarerental.signature">
+        <dc:Bounds x="454" y="128" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0m6921n_di" bpmnElement="hardwarerental.DHBW_Declined">
+        <dc:Bounds x="812" y="150" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="806" y="193" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_1gyj07w_di" bpmnElement="hardwarerental.Signature_Mail">
+        <dc:Bounds x="622" y="128" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xprjdt_di" bpmnElement="SequenceFlow_1xprjdt">
+        <di:waypoint x="722" y="168" />
+        <di:waypoint x="812" y="168" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ccatoe_di" bpmnElement="SequenceFlow_1ccatoe">
+        <di:waypoint x="554" y="168" />
+        <di:waypoint x="622" y="168" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_11cnwiz_di" bpmnElement="hardwarerental-prepare_document">
+        <dc:Bounds x="277" y="128" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0l9r04x_di" bpmnElement="SequenceFlow_0l9r04x">
+        <di:waypoint x="377" y="168" />
+        <di:waypoint x="454" y="168" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1huy1zr_di" bpmnElement="SequenceFlow_1huy1zr">
+        <di:waypoint x="227" y="168" />
+        <di:waypoint x="277" y="168" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

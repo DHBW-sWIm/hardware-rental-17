@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="camunda:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>camunda</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="bpx-mvp.war">
+      <element id="artifact" artifact-name="camunda:war exploded" />
+    </root>
+  </artifact>
+</component>

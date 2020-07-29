@@ -1,0 +1,14 @@
+moodle\ReturnSuccess.class
+moodle\Mail.class
+moodle\StudentData.class
+moodle\RentalApprovalMail.class
+moodle\CamundaLogger.class
+moodle\RentalSignatureMail.class
+moodle\ReturnDamage.class
+moodle\MailMgmtStudentIsIll.class
+moodle\LoggerDelegate.class
+moodle\RemindStudent.class
+moodle\RentalDeclineMail.class
+moodle\RentalData.class
+moodle\ServiceFakeDBWrite.class
+moodle\CamundaBpmProcessApplication.class

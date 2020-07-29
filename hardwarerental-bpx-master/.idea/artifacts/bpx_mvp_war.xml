@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="bpx-mvp:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>bpx-mvp</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="bpx-integration.war">
+      <element id="artifact" artifact-name="bpx-mvp:war exploded" />
+    </root>
+  </artifact>
+</component>

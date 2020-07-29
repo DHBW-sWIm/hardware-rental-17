@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1kx9w1a" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:process id="Process_0tdvmep" isExecutable="true">
+    <bpmn:sequenceFlow id="SequenceFlow_06au1wm" sourceRef="hardwarerental.Await_Approval" targetRef="hardwaretental.Confirm_Returned" />
+    <bpmn:sequenceFlow id="SequenceFlow_0vam47e" sourceRef="hardwaretental.Confirm_Returned" targetRef="IntermediateThrowEvent_1fhgjd6" />
+    <bpmn:endEvent id="IntermediateThrowEvent_1fhgjd6">
+      <bpmn:incoming>SequenceFlow_0vam47e</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="hardwarerental.Await_Approval" name="Application Approval">
+      <bpmn:incoming>SequenceFlow_0jf5spl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_06au1wm</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="hardwaretental.Confirm_Returned" name="Return Confirmation">
+      <bpmn:incoming>SequenceFlow_06au1wm</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0vam47e</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="hardwarerental.Start_Overview">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="stdnt_firstname" label="First name" type="string" />
+          <camunda:formField id="stdnt_id" label="UserID" type="string" />
+          <camunda:formField id="stdnt_reason" label="Reason" type="string" />
+          <camunda:formField id="stdnt_mail" label="Email" type="string" />
+          <camunda:formField id="stdnt_comment" label="Comment" type="string" />
+          <camunda:formField id="stdnt_lastname" label="Lastname" type="string" />
+          <camunda:formField id="stdnt_address" label="Address" type="string" />
+          <camunda:formField id="stdnt_city" label="City" type="string" />
+          <camunda:formField id="stdnt_phone" label="Phone" type="string" />
+          <camunda:formField id="stdnt_username" label="Username" type="string" />
+          <camunda:formField id="stdnt_course" label="Course" type="string" />
+          <camunda:formField id="resource_id" label="ResourceID" type="string" />
+          <camunda:formField id="applic_from" label="Application From" type="date" />
+          <camunda:formField id="applic_to" label="Application to" type="date" />
+          <camunda:formField id="req_date" label="Request Date" type="date" />
+          <camunda:formField id="resource_name" label="Resource name" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0jf5spl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0jf5spl" sourceRef="hardwarerental.Start_Overview" targetRef="hardwarerental.Await_Approval" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0tdvmep">
+      <bpmndi:BPMNEdge id="SequenceFlow_06au1wm_di" bpmnElement="SequenceFlow_06au1wm">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="430" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vam47e_di" bpmnElement="SequenceFlow_0vam47e">
+        <di:waypoint x="530" y="117" />
+        <di:waypoint x="592" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0pt1id9_di" bpmnElement="IntermediateThrowEvent_1fhgjd6">
+        <dc:Bounds x="592" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_03ojpqv_di" bpmnElement="hardwarerental.Await_Approval">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0ria7lg_di" bpmnElement="hardwaretental.Confirm_Returned">
+        <dc:Bounds x="430" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1uahvdf_di" bpmnElement="hardwarerental.Start_Overview">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jf5spl_di" bpmnElement="SequenceFlow_0jf5spl">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

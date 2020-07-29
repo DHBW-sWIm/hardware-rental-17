@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_00wu316" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:collaboration id="return_process">
+    <bpmn:participant id="Participant_0me0m2g" name="sw" processRef="Process_16l7asn" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_16l7asn" isExecutable="true">
+    <bpmn:userTask id="hardwarerental.check_damage" name="Check Damage">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="damage_free" label="Ausleihe bestätigen" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1p7pgyy</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_09mab5f</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="hardwarerental.is_damaged" name="is there damage">
+      <bpmn:incoming>SequenceFlow_09mab5f</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0oqhimu</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_12e1q3h</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_0hskmvy" name="article returned">
+      <bpmn:incoming>SequenceFlow_0g5cdab</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="SendTask_0nk0f42" name="send mail for successful return" camunda:class="moodle.ReturnSuccess">
+      <bpmn:incoming>SequenceFlow_0oqhimu</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0g5cdab</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="EndEvent_1jaomtv" name="article returned with damage">
+      <bpmn:incoming>SequenceFlow_0w5kc63</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sendTask id="SendTask_0p57y6m" name="send mail about damage" camunda:class="moodle.ReturnDamage">
+      <bpmn:incoming>SequenceFlow_12e1q3h</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0w5kc63</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:startEvent id="hardwarerental.start_return">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="stdnt_firstname" label="First name" type="string" />
+          <camunda:formField id="stdnt_id" label="UserID" type="string" />
+          <camunda:formField id="stdnt_reason" label="Reason" type="string" />
+          <camunda:formField id="stdnt_mail" label="Email" type="string" />
+          <camunda:formField id="stdnt_comment" label="Comment" type="string" />
+          <camunda:formField id="stdnt_lastname" label="Lastname" type="string" />
+          <camunda:formField id="stdnt_address" label="Address" type="string" />
+          <camunda:formField id="stdnt_city" label="City" type="string" />
+          <camunda:formField id="stdnt_phone" label="Phone" type="string" />
+          <camunda:formField id="stdnt_username" label="Username" type="string" />
+          <camunda:formField id="stdnt_course" label="Course" type="string" />
+          <camunda:formField id="resource_id" label="ResourceID" type="string" />
+          <camunda:formField id="applic_from" label="Application From" type="date" />
+          <camunda:formField id="applic_to" label="Application to" type="date" />
+          <camunda:formField id="req_date" label="Request Date" type="date" />
+          <camunda:formField id="resource_name" label="Resource name" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1p7pgyy</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_09mab5f" sourceRef="hardwarerental.check_damage" targetRef="hardwarerental.is_damaged" />
+    <bpmn:sequenceFlow id="SequenceFlow_1p7pgyy" sourceRef="hardwarerental.start_return" targetRef="hardwarerental.check_damage" />
+    <bpmn:sequenceFlow id="SequenceFlow_0oqhimu" name="no damage" sourceRef="hardwarerental.is_damaged" targetRef="SendTask_0nk0f42">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${damage_free == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_12e1q3h" name="damage" sourceRef="hardwarerental.is_damaged" targetRef="SendTask_0p57y6m">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${damage_free == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0g5cdab" sourceRef="SendTask_0nk0f42" targetRef="EndEvent_0hskmvy" />
+    <bpmn:sequenceFlow id="SequenceFlow_0w5kc63" sourceRef="SendTask_0p57y6m" targetRef="EndEvent_1jaomtv" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="return_process">
+      <bpmndi:BPMNShape id="Participant_0me0m2g_di" bpmnElement="Participant_0me0m2g" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="780" height="250" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0hbz9q4_di" bpmnElement="hardwarerental.check_damage">
+        <dc:Bounds x="342" y="118" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_01pp09f_di" bpmnElement="hardwarerental.is_damaged" isMarkerVisible="true">
+        <dc:Bounds x="523" y="133" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="510" y="95" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0hskmvy_di" bpmnElement="EndEvent_0hskmvy">
+        <dc:Bounds x="884" y="140" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="866" y="183" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_0nk0f42_di" bpmnElement="SendTask_0nk0f42">
+        <dc:Bounds x="690" y="118" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1jaomtv_di" bpmnElement="EndEvent_1jaomtv">
+        <dc:Bounds x="884" y="252" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="866" y="295" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_0p57y6m_di" bpmnElement="SendTask_0p57y6m">
+        <dc:Bounds x="690" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0tyiez8_di" bpmnElement="hardwarerental.start_return">
+        <dc:Bounds x="210" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_09mab5f_di" bpmnElement="SequenceFlow_09mab5f">
+        <di:waypoint x="442" y="158" />
+        <di:waypoint x="523" y="158" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1p7pgyy_di" bpmnElement="SequenceFlow_1p7pgyy">
+        <di:waypoint x="246" y="160" />
+        <di:waypoint x="294" y="160" />
+        <di:waypoint x="294" y="158" />
+        <di:waypoint x="342" y="158" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0oqhimu_di" bpmnElement="SequenceFlow_0oqhimu">
+        <di:waypoint x="573" y="158" />
+        <di:waypoint x="690" y="158" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="592" y="137" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_12e1q3h_di" bpmnElement="SequenceFlow_12e1q3h">
+        <di:waypoint x="548" y="183" />
+        <di:waypoint x="548" y="270" />
+        <di:waypoint x="690" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="566" y="250" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0g5cdab_di" bpmnElement="SequenceFlow_0g5cdab">
+        <di:waypoint x="790" y="158" />
+        <di:waypoint x="884" y="158" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0w5kc63_di" bpmnElement="SequenceFlow_0w5kc63">
+        <di:waypoint x="790" y="270" />
+        <di:waypoint x="884" y="270" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

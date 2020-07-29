@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <meta http-equiv="cache-control" content="max-age=0" />
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="expires" content="0" />
+  <meta http-equiv="pragma" content="no-cache" />
+
+  <style type="text/css">
+    html, body, #canvas {
+      height: 100%;
+      padding: 0;
+    }
+    
+    .transaction-boundary {
+      background-color: rgba(180, 21, 21, 0.7);
+      border-radius: 1px;
+      min-height: 50px;
+      width: 3px;
+    }
+
+    .execution-listener {
+      background-color: rgba(21, 66, 180, 0.7);
+      color: White;
+      border-radius: 5px;
+      font-family: Arial;
+      font-size: 12px;
+      padding: 5px;
+      min-height: 16px;
+      min-width: 16px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
+      fill: rgba(66, 180, 21, 0.7) !important; /* color elements as green */
+    }
+    
+    .highlight-running .djs-visual > :nth-child(1) {
+    	fill: rgba(0, 198, 218, 0.7) !important; /* color still running flow nodes as blue */
+    }
+    
+    #info-box {
+   	  margin-left: 20px;
+      margin-top: 15px;
+      padding: 10px;
+      table-layout: fixed;
+      border-collapse: collapse;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font-family: sans-serif;
+      line-height: 150%;
+      font-size: 80%;
+      z-index: 1000;
+      background-color: rgba(255,255,255,0.90);
+      border-radius: 10px;
+    }
+  </style>
+
+  <title>Process Test Coverage Report</title>
+</head>
+<body>
+
+  <div id="info-box">
+	<div>Process Definition Name: hardwarerental-request-approval</div>
+	<div>Coverage: 0%</div>
+	<div>Test Class: moodle.InMemoryH2Test</div>
+	
+  </div>
+  
+  <!-- element to draw bpmn diagram in -->
+  <div id="canvas"></div>
+
+  <!-- scripts -->
+
+  <!-- seed dependencies (required for demo only) -->
+  <script src="../bower_components/jquery/dist/jquery.js"></script>
+
+  <!-- bpmn-js viewer -->
+  <script src="../bower_components/bpmn-js/dist/bpmn-navigated-viewer.js"></script>
+
+  <!-- application -->
+  <script>
+    (function(NavigatedViewer, $) {
+
+      // create viewer
+      var bpmnViewer = new NavigatedViewer({
+        container: '#canvas'
+      });
+
+
+      // import function
+      function importXML(xml) {
+
+        // import diagram
+        bpmnViewer.importXML(xml, function(err) {
+
+          if (err) {
+            return console.error('could not import BPMN 2.0 diagram', err);
+          }
+
+          var canvas = bpmnViewer.get('canvas'),
+              overlays = bpmnViewer.get('overlays');
+
+
+          // zoom to fit full viewport
+          canvas.zoom('fit-viewport', true);
+
+      // visualizations          
+      elementRegistry = bpmnViewer.get('elementRegistry');
+      var elements = elementRegistry.getAll();
+      console.log(elements);
+      for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if (element.type != 'label') {
+          
+          // Transaction Boundaries
+          if (element.businessObject.$attrs["camunda:asyncBefore"]
+                || element.businessObject.$attrs["camunda:async"]
+                || element.type == 'bpmn:ReceiveTask'
+                || element.type == 'bpmn:UserTask'
+                || element.type == 'bpmn:IntermediateCatchEvent'
+             ) {
+            overlays.add(element.id, 'note', {
+              position: {
+                bottom: (element.type == 'bpmn:IntermediateCatchEvent' ? 18 : 40),
+                left: -4
+              },
+              html: '<div class="transaction-boundary"></div>'
+            });
+          }
+          if (element.businessObject.$attrs["camunda:asyncAfter"]) {
+            overlays.add(element.id, 'note', {
+              position: {
+                bottom: 19,
+                right: -1
+              },
+              html: '<div class="transaction-boundary"></div>'
+            });
+          }
+          
+          if (element.businessObject.extensionElements) {
+            var extensionElements = element.businessObject.extensionElements.values;
+            for (var j = 0; j < extensionElements.length; j++) {
+              console.log(extensionElements[j]);
+              if (extensionElements[j].$type == 'camunda:executionListener') {
+                if (extensionElements[j].event == 'end') {
+                  overlays.add(element.id, 'note', {
+                    position: {
+                      bottom: 0,
+                      right: 0
+                    },
+                    html: '<div class="execution-listener">' + extensionElements[j].expression + '</div>'
+                  });
+                }
+                if (extensionElements[j].event == 'start') {
+                  overlays.add(element.id, 'note', {
+                    position: {
+                      bottom: 0,
+                      left: 0
+                    },
+                    html: '<div class="execution-listener">' + extensionElements[j].expression + '</div>'
+                  });
+                }
+              }
+            }
+          }
+ 
+ 		  if (element.type == 'bpmn:SequenceFlow' && element.businessObject.conditionExpression) {
+ 		      var position = {
+                      left: 0
+                    }
+              if (element.waypoints[0].y > element.waypoints[element.waypoints.length - 1].y) {
+              	position.top = -29;
+              } else {
+                position.bottom = -3;
+              }    
+          	  overlays.add(element.id, 'note', {
+                    position: position,
+                    html: '<div class="execution-listener">' + element.businessObject.conditionExpression.body + '</div>'
+                  }); 
+		  }
+          
+          if (element.businessObject.$attrs["camunda:delegateExpression"]) {
+            overlays.add(element.id, 'note', {
+              position: {
+                bottom: -3,
+                left: 0
+              },
+              html: '<div class="execution-listener">' + element.businessObject.$attrs["camunda:delegateExpression"] + '</div>'
+            });
+          }
+          
+        }
+      }          
+          //YOUR ANNOTATIONS GO HERE
+
+        });
+      }
+
+
+      var diagramXML = '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http:\/\/www.omg.org\/spec\/BPMN\/20100524\/MODEL\" xmlns:bpmndi=\"http:\/\/www.omg.org\/spec\/BPMN\/20100524\/DI\" xmlns:di=\"http:\/\/www.omg.org\/spec\/DD\/20100524\/DI\" xmlns:dc=\"http:\/\/www.omg.org\/spec\/DD\/20100524\/DC\" xmlns:camunda=\"http:\/\/camunda.org\/schema\/1.0\/bpmn\" xmlns:xsi=\"http:\/\/www.w3.org\/2001\/XMLSchema-instance\" id=\"Definitions_12q03ll\" targetNamespace=\"http:\/\/bpmn.io\/schema\/bpmn\" exporter=\"Camunda Modeler\" exporterVersion=\"3.5.0\">\n  <bpmn:collaboration id=\"Collaboration_0ajjq4a\">\n    <bpmn:participant id=\"dsjfadskjgdsfgkjdsflkjgldsjgdsg\" name=\"sw\" processRef=\"hardwarerental-request-approval\" \/>\n  <\/bpmn:collaboration>\n  <bpmn:process id=\"hardwarerental-request-approval\" name=\"Hardwarerental Request Approval\" isExecutable=\"true\">\n    <bpmn:userTask id=\"hardwarerental.DHBW_Approval\" name=\"Work on Request\">\n      <bpmn:extensionElements>\n        <camunda:formData>\n          <camunda:formField id=\"application_approval\" label=\"Ausleihe best\u00C3\u00A4tigen\" type=\"boolean\" \/>\n        <\/camunda:formData>\n      <\/bpmn:extensionElements>\n      <bpmn:incoming>SequenceFlow_0sqs4j5<\/bpmn:incoming>\n      <bpmn:outgoing>SequenceFlow_1h5p4n9<\/bpmn:outgoing>\n    <\/bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"hardwarerental.Approval\" name=\"is the request approved\">\n      <bpmn:incoming>SequenceFlow_1h5p4n9<\/bpmn:incoming>\n      <bpmn:outgoing>hardwarerental.declined<\/bpmn:outgoing>\n      <bpmn:outgoing>hardwarerental.approved<\/bpmn:outgoing>\n    <\/bpmn:exclusiveGateway>\n    <bpmn:endEvent id=\"hardwarerental.DHBW_Approved\" name=\"request is approved\">\n      <bpmn:incoming>SequenceFlow_156go2e<\/bpmn:incoming>\n    <\/bpmn:endEvent>\n    <bpmn:sendTask id=\"hardwarerental.Approval_Mail\" name=\"send approval mail to borrower\" camunda:class=\"moodle.RentalApprovalMail\">\n      <bpmn:incoming>hardwarerental.approved<\/bpmn:incoming>\n      <bpmn:outgoing>SequenceFlow_156go2e<\/bpmn:outgoing>\n    <\/bpmn:sendTask>\n    <bpmn:endEvent id=\"hardwarerental.DHBW_Declined\" name=\"request is declined\">\n      <bpmn:incoming>SequenceFlow_1xprjdt<\/bpmn:incoming>\n    <\/bpmn:endEvent>\n    <bpmn:sendTask id=\"hardwarerental.Declinal_Mail\" name=\"send declinal mail to borrower\" camunda:class=\"moodle.RentalDeclineMail\">\n      <bpmn:incoming>hardwarerental.declined<\/bpmn:incoming>\n      <bpmn:outgoing>SequenceFlow_1xprjdt<\/bpmn:outgoing>\n    <\/bpmn:sendTask>\n    <bpmn:sequenceFlow id=\"SequenceFlow_1xprjdt\" sourceRef=\"hardwarerental.Declinal_Mail\" targetRef=\"hardwarerental.DHBW_Declined\" \/>\n    <bpmn:sequenceFlow id=\"SequenceFlow_156go2e\" sourceRef=\"hardwarerental.Approval_Mail\" targetRef=\"hardwarerental.DHBW_Approved\" \/>\n    <bpmn:sequenceFlow id=\"hardwarerental.declined\" name=\"declined\" sourceRef=\"hardwarerental.Approval\" targetRef=\"hardwarerental.Declinal_Mail\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">${application_approval == false}<\/bpmn:conditionExpression>\n    <\/bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"hardwarerental.approved\" name=\"approved\" sourceRef=\"hardwarerental.Approval\" targetRef=\"hardwarerental.Approval_Mail\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">${application_approval == true}<\/bpmn:conditionExpression>\n    <\/bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"SequenceFlow_0sqs4j5\" sourceRef=\"StartEvent_1\" targetRef=\"hardwarerental.DHBW_Approval\" \/>\n    <bpmn:sequenceFlow id=\"SequenceFlow_1h5p4n9\" sourceRef=\"hardwarerental.DHBW_Approval\" targetRef=\"hardwarerental.Approval\" \/>\n    <bpmn:startEvent id=\"StartEvent_1\">\n      <bpmn:extensionElements>\n        <camunda:formData>\n          <camunda:formField id=\"stdnt_firstname\" label=\"First name\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_id\" label=\"UserID\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_reason\" label=\"Reason\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_mail\" label=\"Email\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_comment\" label=\"Comment\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_lastname\" label=\"Lastname\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_address\" label=\"Address\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_city\" label=\"City\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_phone\" label=\"Phone\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_username\" label=\"Username\" type=\"string\" \/>\n          <camunda:formField id=\"stdnt_course\" label=\"Course\" type=\"string\" \/>\n          <camunda:formField id=\"resource_id\" label=\"ResourceID\" type=\"string\" \/>\n          <camunda:formField id=\"applic_from\" label=\"Application From\" type=\"date\" \/>\n          <camunda:formField id=\"applic_to\" label=\"Application to\" type=\"date\" \/>\n          <camunda:formField id=\"req_date\" label=\"Request Date\" type=\"date\" \/>\n          <camunda:formField id=\"resource_name\" label=\"Resource name\" type=\"string\" \/>\n        <\/camunda:formData>\n      <\/bpmn:extensionElements>\n      <bpmn:outgoing>SequenceFlow_0sqs4j5<\/bpmn:outgoing>\n    <\/bpmn:startEvent>\n  <\/bpmn:process>\n  <bpmndi:BPMNDiagram id=\"BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"BPMNPlane_1\" bpmnElement=\"Collaboration_0ajjq4a\">\n      <bpmndi:BPMNShape id=\"Participant_0mcf56u_di\" bpmnElement=\"dsjfadskjgdsfgkjdsflkjgldsjgdsg\" isHorizontal=\"true\">\n        <dc:Bounds x=\"156\" y=\"112\" width=\"780\" height=\"250\" \/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"_BPMNShape_StartEvent_2\" bpmnElement=\"StartEvent_1\">\n        <dc:Bounds x=\"206\" y=\"171\" width=\"36\" height=\"36\" \/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"UserTask_1dc1v0d_di\" bpmnElement=\"hardwarerental.DHBW_Approval\">\n        <dc:Bounds x=\"338\" y=\"150\" width=\"100\" height=\"80\" \/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"ExclusiveGateway_0o6iw96_di\" bpmnElement=\"hardwarerental.Approval\" isMarkerVisible=\"true\">\n        <dc:Bounds x=\"519\" y=\"165\" width=\"50\" height=\"50\" \/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"511\" y=\"127\" width=\"67\" height=\"27\" \/>\n        <\/bpmndi:BPMNLabel>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"EndEvent_05m8k05_di\" bpmnElement=\"hardwarerental.DHBW_Approved\">\n        <dc:Bounds x=\"880\" y=\"172\" width=\"36\" height=\"36\" \/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"874\" y=\"215\" width=\"48\" height=\"27\" \/>\n        <\/bpmndi:BPMNLabel>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"SendTask_1idd1gl_di\" bpmnElement=\"hardwarerental.Approval_Mail\">\n        <dc:Bounds x=\"686\" y=\"150\" width=\"100\" height=\"80\" \/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"EndEvent_0m6921n_di\" bpmnElement=\"hardwarerental.DHBW_Declined\">\n        <dc:Bounds x=\"880\" y=\"284\" width=\"36\" height=\"36\" \/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"874\" y=\"327\" width=\"48\" height=\"27\" \/>\n        <\/bpmndi:BPMNLabel>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"SendTask_1gyj07w_di\" bpmnElement=\"hardwarerental.Declinal_Mail\">\n        <dc:Bounds x=\"686\" y=\"262\" width=\"100\" height=\"80\" \/>\n      <\/bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_1h5p4n9_di\" bpmnElement=\"SequenceFlow_1h5p4n9\">\n        <di:waypoint x=\"438\" y=\"189.5\" \/>\n        <di:waypoint x=\"519\" y=\"189.5\" \/>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_0sqs4j5_di\" bpmnElement=\"SequenceFlow_0sqs4j5\">\n        <di:waypoint x=\"242\" y=\"189\" \/>\n        <di:waypoint x=\"290\" y=\"189\" \/>\n        <di:waypoint x=\"290\" y=\"190\" \/>\n        <di:waypoint x=\"338\" y=\"190\" \/>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_0hyqrlj_di\" bpmnElement=\"hardwarerental.approved\">\n        <di:waypoint x=\"569\" y=\"189.5\" \/>\n        <di:waypoint x=\"686\" y=\"189.5\" \/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"592\" y=\"169\" width=\"47\" height=\"14\" \/>\n        <\/bpmndi:BPMNLabel>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_1chmpzd_di\" bpmnElement=\"hardwarerental.declined\">\n        <di:waypoint x=\"544\" y=\"214.5\" \/>\n        <di:waypoint x=\"544\" y=\"301.5\" \/>\n        <di:waypoint x=\"686\" y=\"301.5\" \/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"561\" y=\"282\" width=\"42\" height=\"14\" \/>\n        <\/bpmndi:BPMNLabel>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_156go2e_di\" bpmnElement=\"SequenceFlow_156go2e\">\n        <di:waypoint x=\"786\" y=\"189.5\" \/>\n        <di:waypoint x=\"880\" y=\"189.5\" \/>\n      <\/bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"SequenceFlow_1xprjdt_di\" bpmnElement=\"SequenceFlow_1xprjdt\">\n        <di:waypoint x=\"786\" y=\"301.5\" \/>\n        <di:waypoint x=\"880\" y=\"301.5\" \/>\n      <\/bpmndi:BPMNEdge>\n    <\/bpmndi:BPMNPlane>\n  <\/bpmndi:BPMNDiagram>\n<\/bpmn:definitions>\n';
+      importXML(diagramXML);
+
+    })(window.BpmnJS, window.jQuery);
+  </script>
+</body>
+</html>

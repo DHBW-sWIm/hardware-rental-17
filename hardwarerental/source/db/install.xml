@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/hardwarerental/db" VERSION="2018090900" COMMENT="XMLDB file for Moodle mod/hardwarerental"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="hardwarerental" COMMENT="Default comment for hardwarerental, please edit me">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course hardwarerental activity belongs to"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="General introduction of the hardwarerental activity"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false"
+                       COMMENT="The maximum grade. Can be negative to indicate the use of a scale."/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_users" COMMENT="Users in the hardware rental system">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="tenant" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Tenant of the user"/>
+                <FIELD NAME="moodle_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Moodle user id"/>
+                <FIELD NAME="role" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Role of the user (DHBW authority or laboratory engineer)"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="tenant" UNIQUE="false" FIELDS="tenant"/>
+            </INDEXES>
+        </TABLE>
+
+        <TABLE NAME="hardwarerental_resources" COMMENT="Hardware rental resources">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Required for technical reasons"/>
+                <FIELD NAME="tenant" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Tenant for multi-tenancy"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255"  NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource name"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource description"/>
+                <FIELD NAME="comment" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource comment"/>
+                <FIELD NAME="category" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource category"/>
+                <FIELD NAME="manufacturer" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource category"/>
+                <FIELD NAME="quantity" TYPE="int" LENGTH="10"  NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Resource quantity"/>
+                <FIELD NAME="serial" TYPE="char" LENGTH="255"  NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Serial Number"/>
+                <FIELD NAME="inventory_nr" TYPE="char" LENGTH="255"  NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="Inventory nr"/>
+                <FIELD NAME="tags" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Tags separated by semicolons" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_tags" COMMENT="Hardware rental resources">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="Required for technical reasons"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255"  NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Tag name"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_category" COMMENT="Users in the hardware rental system">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="category" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="PDF"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_manufacturer" COMMENT="Users in the hardware rental system">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="manufacturer" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="PDF"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_reservations" COMMENT="Reservations in the hardware rental system">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="resource" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="tenant" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="amount" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="start" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="end" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="camunda_id" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="approved_by" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="approved_on" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="rec_note" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="ret_note" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="comment" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_ext_users" COMMENT="External users with no Moodle access">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="tenant" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="full_name" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="address" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="email" TYPE="text" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="phone" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+                <FIELD NAME="responsible" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT=""/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="hardwarerental_pdf" COMMENT="Users in the hardware rental system">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" COMMENT="User id for technical reasons"/>
+                <FIELD NAME="pdf" TYPE="binary" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="PDF"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="id" UNIQUE="false" FIELDS="id"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>
